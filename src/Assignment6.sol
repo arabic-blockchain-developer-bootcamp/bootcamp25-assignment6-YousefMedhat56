@@ -8,13 +8,13 @@ contract Assignment6 {
     // 2. Declare an event called `FundsWithdrawn` with parameters: `receiver` and `amount`
     event FundsWithdrawn(address receiver, uint amount);
 
-    // 3. Create a public mapping called `balances` to tracker users balances
-    mapping(address=>uint) public balances;
+    // 3. Create a public mapping called `balances` to track user balances
+    mapping(address => uint) public balances;
 
     // Modifier to check if sender has enough balance
     modifier hasEnoughBalance(uint amount) {
-        // Fill in the logic using require
-        require(amount>balances[msg.sender], "Insufficient balance");
+        // Corrected logic using require
+        require(balances[msg.sender] >= amount, "Insufficient balance");
         _;
     }
 
@@ -22,10 +22,11 @@ contract Assignment6 {
     // This function should:
     // - Be external and payable
     // - Emit the `FundsDeposited` event
-    function deposit() external payable  {
-        // increment user balance in balances mapping 
-        balances[msg.sender]+=msg.value;
-        // emit suitable event
+    function deposit() external payable {
+        // Increment user balance in balances mapping 
+        balances[msg.sender] += msg.value;
+
+        // Emit suitable event
         emit FundsDeposited(msg.sender, msg.value);
     }
 
@@ -35,25 +36,23 @@ contract Assignment6 {
     // - Take one parameter: `amount`
     // - Use the `hasEnoughBalance` modifier
     // - Emit the `FundsWithdrawn` event
-    function withdraw(uint amount) hasEnoughBalance(amount) external  {
-        // decrement user balance from balances mapping 
-        balances[msg.sender]-=amount;
+    function withdraw(uint amount) external hasEnoughBalance(amount) {
+        // Decrement user balance from balances mapping 
+        balances[msg.sender] -= amount;
 
-        // send tokens to the caller
+        // Send tokens to the caller
         payable(msg.sender).transfer(amount);
         
-        // emit suitable event
+        // Emit suitable event
         emit FundsWithdrawn(msg.sender, amount);
-
     }
 
     // Function to check the contract balance
     // This function should:
     // - Be public and view
     // - Return the contract's balance
-    function getContractBalance() public view returns(uint) {
-        // return the balance of the contract
-        return balances[address(this)];
-
+    function getContractBalance() public view returns (uint) {
+        // Return the balance of the contract
+        return address(this).balance;
     }
 }
