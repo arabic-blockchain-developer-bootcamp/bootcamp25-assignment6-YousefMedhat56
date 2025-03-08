@@ -40,7 +40,8 @@ contract Assignment6 {
         balances[msg.sender]-=amount;
 
         // send tokens to the caller
-
+        payable(msg.sender).transfer(amount);
+        
         // emit suitable event
         emit FundsWithdrawn(msg.sender, amount);
 
